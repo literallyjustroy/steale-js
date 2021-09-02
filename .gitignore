@@ -1,0 +1,6 @@
+.idea/
+dist/
+node_modules/
+cookies.json
+log.log
+yarn-error.log
