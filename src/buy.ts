@@ -7,7 +7,7 @@ export let moneySpent = 0;
 let totalEstProfit = 0;
 
 export async function buy(productId: string, itemDetails: ItemDetails, cookies: puppeteer.Protocol.Network.Cookie[], potentialProfit: number): Promise<void> {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setCookie(...cookies);
     await page.goto(`https://www.roblox.com/catalog/${productId}`);
