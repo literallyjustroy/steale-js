@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs';
 import { log } from './util/log';
 
@@ -19,7 +19,16 @@ import { log } from './util/log';
         }
     }
 
-    const browser = await puppeteer.launch({ headless: true });
+    let browser: Browser;
+    if (process.arch === 'arm') {
+        browser = await puppeteer.launch({
+            headless: true,
+            executablePath: '/usr/bin/chromium-browser',
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
+    } else {
+        browser = await puppeteer.launch({ headless: true });
+    }
     const page = await browser.newPage();
     await page.goto('https://www.roblox.com/login');
     // await page.screenshot({ path: 'example.png' });
