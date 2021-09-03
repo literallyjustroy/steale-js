@@ -3,17 +3,28 @@ import fs from 'fs';
 import { log } from './util/log';
 
 (async () => {
-    if (process.env.RBX_USER == null || process.env.RBX_PASS == null) {
-        log.error('Environment Variables RBX_USER and RBX_PASS must be defined');
-        process.exit();
+    let username;
+    let password;
+
+    if (process.env.RBX_USER != null && process.env.RBX_PASS != null) {
+        username = process.env.RBX_USER;
+        password = process.env.RBX_PASS;
+    } else {
+        if (process.argv[2] != null && process.argv[3] != null) {
+            username = process.argv[2];
+            password = process.argv[3];
+        } else {
+            log.error('Environment Variables RBX_USER and RBX_PASS must be defined or username/password must be passed in as the first and second arguments');
+            process.exit();
+        }
     }
 
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto('https://www.roblox.com/login');
     // await page.screenshot({ path: 'example.png' });
-    await page.type('#login-username', process.env.RBX_USER);
-    await page.type('#login-password', process.env.RBX_PASS);
+    await page.type('#login-username', username);
+    await page.type('#login-password', password);
     await page.click('#login-button');
     try {
         await page.waitForNavigation();
