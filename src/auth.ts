@@ -1,6 +1,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs';
 import { log } from './util/log';
+import { getBrowser } from './util/util';
 
 (async () => {
     let username;
@@ -19,15 +20,7 @@ import { log } from './util/log';
         }
     }
 
-    let browser: Browser;
-    if (process.arch === 'arm') {
-        browser = await puppeteer.launch({
-            headless: true,
-            executablePath: '/usr/bin/chromium-browser'
-        });
-    } else {
-        browser = await puppeteer.launch({ headless: false });
-    }
+    const browser: Browser = await getBrowser(true);
     const page = await browser.newPage();
     await page.goto('https://www.roblox.com/login');
     // await page.screenshot({ path: 'example.png' });

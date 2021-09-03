@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { parse } from 'node-html-parser';
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs';
 import { log } from './log';
 import { ItemDetails } from '../models/itemDetails';
@@ -54,4 +54,15 @@ export function readCookies(): puppeteer.Protocol.Network.Cookie[] {
 
 export async function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function getBrowser(isHeadlessWOnly: boolean): Promise<Browser> {
+    if (process.arch === 'arm') {
+        return await puppeteer.launch({
+            headless: true,
+            executablePath: '/usr/bin/chromium-browser'
+        });
+    } else {
+        return await puppeteer.launch({ headless: isHeadlessWOnly });
+    }
 }
