@@ -26,7 +26,7 @@ import { log } from './util/log';
             executablePath: '/usr/bin/chromium-browser'
         });
     } else {
-        browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({ headless: false });
     }
     const page = await browser.newPage();
     await page.goto('https://www.roblox.com/login');
