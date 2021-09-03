@@ -11,6 +11,9 @@ const profitMarginPercent = 0; // The average price is an estimate in any case, 
 const priceCutPercent = 0.30; // Roblox take's 30% cut of transactions
 let errorCount = 0;
 
+const cookies = readCookies();
+const cookieString = getCookieString(cookies);
+
 (async () => {
     log.info(`Monitoring item https://www.roblox.com/catalog/${productId}`);
 
@@ -30,8 +33,6 @@ let errorCount = 0;
 async function monitor() {
     const start = performance.now();
 
-    const cookies = readCookies();
-    const cookieString = getCookieString(cookies);
     const itemDetails = await getItemDetails(`https://www.roblox.com/catalog/${productId}`, cookieString);
     if (itemDetails.expectedPrice != 0) {
         const potentialProfit = (avgPrice * (1 - priceCutPercent - profitMarginPercent)) - itemDetails.expectedPrice; // 30% cut along with extra margins

@@ -6,11 +6,6 @@ import { log } from './log';
 import { ItemDetails } from '../models/itemDetails';
 
 export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
-    const rbxSecCookie = cookies.find(cookie => cookie.name === '.ROBLOSECURITY');
-    if (rbxSecCookie === undefined) {
-        throw Error('No .ROBLOSECURITY cookie found');
-    }
-
     let cookieString = '';
 
     cookies.forEach(cookie => {
@@ -49,7 +44,14 @@ export async function getItemDetails(url: string, cookieString: string): Promise
 
 export function readCookies(): puppeteer.Protocol.Network.Cookie[] {
     const cookiesString = fs.readFileSync('./cookies.json', 'utf8');
-    return JSON.parse(cookiesString);
+    const cookies = JSON.parse(cookiesString);
+
+    const rbxSecCookie = cookies.find((cookie: puppeteer.Protocol.Network.Cookie) => cookie.name === '.ROBLOSECURITY');
+    if (rbxSecCookie === undefined) {
+        throw Error('No .ROBLOSECURITY cookie found');
+    }
+
+    return [rbxSecCookie];
 }
 
 export async function sleep(ms: number): Promise<void> {
