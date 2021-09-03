@@ -21,11 +21,10 @@ export async function buy(productId: string, itemDetails: ItemDetails, cookies: 
             await confirmButton.click();
             await page.waitForNavigation();
 
+            purchases++;
             totalEstProfit += potentialProfit;
             moneySpent += itemDetails.expectedPrice;
             transactions.debug(`\nTotal Purchases: ${purchases}\nTotal spent: ${moneySpent}\nTotal estimated profit: ${totalEstProfit}`);
-
-            purchases++;
         } else {
             log.error('Failed to find confirm button');
         }
