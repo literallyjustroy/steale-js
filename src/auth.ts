@@ -20,7 +20,7 @@ import { getBrowser } from './util/util';
         }
     }
 
-    const browser: Browser = await getBrowser(true);
+    const browser: Browser = await getBrowser(false);
     const page = await browser.newPage();
     await page.goto('https://www.roblox.com/login');
     // await page.screenshot({ path: 'example.png' });
