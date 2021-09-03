@@ -1,46 +1,53 @@
-// noinspection InfiniteLoopJS
-
 import { performance } from 'perf_hooks';
-import { getCookieString, getItemDetails, sleep } from './util/util';
-import { buy } from './buy';
+import { getCookieString, getItemDetails, readCookies, sleep } from './util/util';
+import { buy, moneySpent } from './buy';
+import { log, transactions } from './util/log';
+import 'source-map-support/register'; // Error handling showing typescript lines
 
-const productId = '20573078'; // shaggy
-const avgPrice = 1119; // !! NEVER USE AVERAGE PRICE, ex: avg price 3137 for perf legit business hat, value: 6000
+const productId = '494291269'; // smiley face
+const avgPrice = 70000; // !! NEVER USE AVERAGE PRICE, ex: avg price 3137 for perf legit business hat, value: 6000
+const profitMarginPercent = 0; // The average price is an estimate in any case, so this can be 0
+
+const priceCutPercent = 0.30; // Roblox take's 30% cut of transactions
 let errorCount = 0;
-let moneySpent = 0;
-let totalEstProfit = 0;
 
 (async () => {
+    log.info(`Monitoring item https://www.roblox.com/catalog/${productId}`);
+
     while (errorCount <= 5 && moneySpent < 10000) {
         try {
             await monitor();
         } catch (e) {
-            console.error('Had an issue: ', e);
             errorCount++;
+            log.error(`Had an issue (${errorCount}): `, e);
+
             await sleep(5000 * errorCount); // Had an issue, waiting it out for 5 seconds per error count
         }
     }
+    log.fatal(`Too many errors (${errorCount}), time to take a nap`);
 })();
 
 async function monitor() {
     const start = performance.now();
 
-    const cookieString = getCookieString();
+    const cookies = readCookies();
+    const cookieString = getCookieString(cookies);
     const itemDetails = await getItemDetails(`https://www.roblox.com/catalog/${productId}`, cookieString);
-    const potentialProfit = (avgPrice * 0.7) - itemDetails.expectedPrice; // 30% cut
-    if (potentialProfit > 0) { // TODO Make this more secure or somethin, we lose money otherwise
-        console.log(`Buying item for ${Math.floor((avgPrice) - itemDetails.expectedPrice)} profit:\n`, itemDetails);
+    if (itemDetails.expectedPrice != 0) {
+        const potentialProfit = (avgPrice * (1 - priceCutPercent - profitMarginPercent)) - itemDetails.expectedPrice; // 30% cut along with extra margins
+        if (potentialProfit > 0) {
+            transactions.debug(`Buying item for ${Math.floor(potentialProfit)} profit:\n`, itemDetails);
 
-        await buy(productId, itemDetails);
+            await buy(productId, itemDetails, cookies, potentialProfit);
+        }
 
-        totalEstProfit += potentialProfit;
-        moneySpent += itemDetails.expectedPrice;
-        console.log('total spent: ' + moneySpent);
-        console.log('total expected profit: ' + totalEstProfit);
+        if (errorCount > 0) {
+            errorCount--; // Each success lowers error count
+        }
+    } else {
+        log.error('Expected price of 0?');
     }
 
-    errorCount--; // Each success lowers error count
-
     const end = performance.now();
-    console.log(`Took ${end - start} miliseconds`);
+    log.info(`Took ${end - start} miliseconds`);
 }

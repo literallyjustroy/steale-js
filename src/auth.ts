@@ -1,9 +1,10 @@
 import puppeteer from 'puppeteer';
 import fs from 'fs';
+import { log } from './util/log';
 
 (async () => {
     if (process.env.RBX_USER == null || process.env.RBX_PASS == null) {
-        console.error('Environment Variables RBX_USER and RBX_PASS must be defined');
+        log.error('Environment Variables RBX_USER and RBX_PASS must be defined');
         process.exit();
     }
 
@@ -18,9 +19,9 @@ import fs from 'fs';
         await page.waitForNavigation();
         await page.goto('https://www.roblox.com/catalog/20573078');
         await saveCookies(page);
-        console.log('Cookies saved');
+        log.debug('Cookies saved');
     } catch (e) {
-        console.error('verification blows');
+        log.error('verification blows', e);
     }
 
     await browser.close();

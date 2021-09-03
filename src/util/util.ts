@@ -2,10 +2,10 @@ import fetch from 'node-fetch';
 import { parse, HTMLElement } from 'node-html-parser';
 import puppeteer from 'puppeteer';
 import fs from 'fs';
+import { log } from './log';
+import { ItemDetails } from '../models/itemDetails';
 
-export function getCookieString(): string {
-    const cookies = readCookies();
-
+export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
     const rbxSecCookie = cookies.find(cookie => cookie.name === '.ROBLOSECURITY');
     if (rbxSecCookie === undefined) {
         throw Error('No .ROBLOSECURITY cookie found');
@@ -44,7 +44,7 @@ export async function getItemDetails(url: string, cookieString: string): Promise
             userAssetId: +(itemHtml.getAttribute('data-userasset-id') as string),
         };
     } catch (e) {
-        console.error(`Error getting item details in HTML:\n${html}`);
+        log.error('Error getting item details in HTML');
         throw e;
     }
 }

@@ -1,6 +1,7 @@
-.idea/
 dist/
 node_modules/
+logs/
 cookies.json
 log.log
+transactions.log
 yarn-error.log
