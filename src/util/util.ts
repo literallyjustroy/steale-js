@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { parse, HTMLElement } from 'node-html-parser';
+import { parse } from 'node-html-parser';
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import { log } from './log';
@@ -20,20 +20,17 @@ export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): s
     return cookieString;
 }
 
-export async function getItemDetails(url: string, cookieString: string): Promise<ItemDetails> {
-    let html: HTMLElement | undefined = undefined;
+export async function getItemDetails(url: string): Promise<ItemDetails> {
     try {
         const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
-                'cookie': cookieString,
             }
         });
-        html = parse(await response.text());
+        const html = parse(await response.text());
         const itemHtml = html.querySelector('#item-container');
 
         return {
-            token: html.querySelector('meta[name=\'csrf-token\']').getAttribute('data-token') as string,
             productId: itemHtml.getAttribute('data-product-id') as string,
             type: itemHtml.getAttribute('data-item-type') as string,
             name: itemHtml.getAttribute('data-item-name') as string,

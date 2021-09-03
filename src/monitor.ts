@@ -1,10 +1,10 @@
 import { performance } from 'perf_hooks';
 import { getCookieString, getItemDetails, readCookies, sleep } from './util/util';
 import { buy, moneySpent } from './buy';
-import { log, transactions } from './util/log';
+import { log, logOnly, transactions } from './util/log';
 import 'source-map-support/register'; // Error handling showing typescript lines
 
-const productId = '494291269'; // smiley face
+const productId = '20573078'; // shaggy
 const avgPrice = 70000; // !! NEVER USE AVERAGE PRICE, ex: avg price 3137 for perf legit business hat, value: 6000
 const profitMarginPercent = 0; // The average price is an estimate in any case, so this can be 0
 
@@ -31,14 +31,17 @@ async function monitor() {
     const start = performance.now();
 
     const cookies = readCookies();
-    const cookieString = getCookieString(cookies);
-    const itemDetails = await getItemDetails(`https://www.roblox.com/catalog/${productId}`, cookieString);
+    const itemDetails = await getItemDetails(`https://www.roblox.com/catalog/${productId}`);
     if (itemDetails.expectedPrice != 0) {
         const potentialProfit = (avgPrice * (1 - priceCutPercent - profitMarginPercent)) - itemDetails.expectedPrice; // 30% cut along with extra margins
         if (potentialProfit > 0) {
             transactions.debug(`Buying item for ${Math.floor(potentialProfit)} profit:\n`, itemDetails);
 
-            await buy(productId, itemDetails, cookies, potentialProfit);
+            try {
+                await buy(productId, itemDetails, cookies, potentialProfit);
+            } catch (e) {
+                transactions.error('Error buying item; did we miss it?', e);
+            }
         }
 
         if (errorCount > 0) {
@@ -49,5 +52,5 @@ async function monitor() {
     }
 
     const end = performance.now();
-    log.info(`Took ${end - start} miliseconds`);
+    logOnly.info(`Took ${end - start} miliseconds`);
 }

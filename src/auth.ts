@@ -8,7 +8,7 @@ import { log } from './util/log';
         process.exit();
     }
 
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto('https://www.roblox.com/login');
     // await page.screenshot({ path: 'example.png' });

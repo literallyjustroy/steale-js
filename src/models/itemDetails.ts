@@ -1,5 +1,4 @@
 export interface ItemDetails {
-    token: string,
     productId: string,
     type: string,
     name: string,
