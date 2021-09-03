@@ -34,9 +34,9 @@ async function monitor() {
 
     const lowestPrice = await getItemPrice(`https://www.roblox.com/catalog/${productId}`);
     if (lowestPrice !== undefined && lowestPrice != 0) {
-        const potentialProfit = (avgPrice * (1 - priceCutPercent - profitMarginPercent)) - lowestPrice; // 30% cut along with extra margins
+        const potentialProfit = Math.floor((avgPrice * (1 - priceCutPercent - profitMarginPercent)) - lowestPrice); // 30% cut along with extra margins
         if (potentialProfit > 0) {
-            transactions.debug(`Buying item for ${lowestPrice}. Profit: `, Math.floor(potentialProfit));
+            transactions.debug(`Buying item for ${lowestPrice}. Profit: `, potentialProfit);
 
             try {
                 await buy(productId, lowestPrice, cookies, potentialProfit);
