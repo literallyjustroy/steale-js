@@ -5,7 +5,7 @@ import { log, logOnly, transactions } from './util/log';
 import 'source-map-support/register'; // Error handling showing typescript lines
 
 const productId = '20573078'; // shaggy
-const avgPrice = 70000; // !! NEVER USE AVERAGE PRICE, ex: avg price 3137 for perf legit business hat, value: 6000
+const avgPrice = 1119; // !! NEVER USE AVERAGE PRICE, ex: avg price 3137 for perf legit business hat, value: 6000
 const profitMarginPercent = 0; // The average price is an estimate in any case, so this can be 0
 
 const priceCutPercent = 0.30; // Roblox take's 30% cut of transactions
@@ -31,7 +31,8 @@ async function monitor() {
     const start = performance.now();
 
     const cookies = readCookies();
-    const itemDetails = await getItemDetails(`https://www.roblox.com/catalog/${productId}`);
+    const cookieString = getCookieString(cookies);
+    const itemDetails = await getItemDetails(`https://www.roblox.com/catalog/${productId}`, cookieString);
     if (itemDetails.expectedPrice != 0) {
         const potentialProfit = (avgPrice * (1 - priceCutPercent - profitMarginPercent)) - itemDetails.expectedPrice; // 30% cut along with extra margins
         if (potentialProfit > 0) {

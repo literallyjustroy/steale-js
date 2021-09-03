@@ -20,11 +20,12 @@ export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): s
     return cookieString;
 }
 
-export async function getItemDetails(url: string): Promise<ItemDetails> {
+export async function getItemDetails(url: string, cookieString: string): Promise<ItemDetails> {
     try {
         const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
+                'cookie': cookieString,
             }
         });
         const html = parse(await response.text());
