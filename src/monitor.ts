@@ -1,5 +1,5 @@
 import { performance } from 'perf_hooks';
-import { getCookieString, getItemDetails, readCookies, sleep } from './util/util';
+import { getItemPrice, readCookies, sleep } from './util/util';
 import { buy, moneySpent } from './buy';
 import { log, logOnly, transactions } from './util/log';
 import 'source-map-support/register'; // Error handling showing typescript lines
@@ -12,7 +12,6 @@ const priceCutPercent = 0.30; // Roblox take's 30% cut of transactions
 let errorCount = 0;
 
 const cookies = readCookies();
-const cookieString = getCookieString(cookies);
 
 (async () => {
     log.info(`Monitoring item https://www.roblox.com/catalog/${productId}`);
@@ -33,14 +32,14 @@ const cookieString = getCookieString(cookies);
 async function monitor() {
     const start = performance.now();
 
-    const itemDetails = await getItemDetails(`https://www.roblox.com/catalog/${productId}`, cookieString);
-    if (itemDetails.expectedPrice != 0) {
-        const potentialProfit = (avgPrice * (1 - priceCutPercent - profitMarginPercent)) - itemDetails.expectedPrice; // 30% cut along with extra margins
+    const lowestPrice = await getItemPrice(`https://www.roblox.com/catalog/${productId}`);
+    if (lowestPrice !== undefined && lowestPrice != 0) {
+        const potentialProfit = (avgPrice * (1 - priceCutPercent - profitMarginPercent)) - lowestPrice; // 30% cut along with extra margins
         if (potentialProfit > 0) {
-            transactions.debug(`Buying item for ${Math.floor(potentialProfit)} profit:\n`, itemDetails);
+            transactions.debug(`Buying item for ${lowestPrice}. Profit: `, Math.floor(potentialProfit));
 
             try {
-                await buy(productId, itemDetails, cookies, potentialProfit);
+                await buy(productId, lowestPrice, cookies, potentialProfit);
             } catch (e) {
                 transactions.error('Error buying item; did we miss it?', e);
             }

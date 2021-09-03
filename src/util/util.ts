@@ -3,9 +3,8 @@ import { parse } from 'node-html-parser';
 import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs';
 import { log } from './log';
-import { ItemDetails } from '../models/itemDetails';
 
-export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
+/*export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
     let cookieString = '';
 
     cookies.forEach(cookie => {
@@ -13,29 +12,25 @@ export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): s
     });
 
     return cookieString;
-}
+}*/
 
-export async function getItemDetails(url: string, cookieString: string): Promise<ItemDetails> {
+export async function getItemPrice(url: string): Promise<number | undefined> {
     try {
         const response = await fetch(url, {
             headers: {
-                'Content-Type': 'application/json',
-                'cookie': cookieString,
+                'Content-Type': 'application/json'
             }
         });
         const html = parse(await response.text());
-        const itemHtml = html.querySelector('#item-container');
+        const priceInfo = html.querySelector('.price-info');
+        let priceText = priceInfo.querySelector('.text-robux-lg').text;
+        priceText = priceText.replace(',', '');
 
-        return {
-            productId: itemHtml.getAttribute('data-product-id') as string,
-            type: itemHtml.getAttribute('data-item-type') as string,
-            name: itemHtml.getAttribute('data-item-name') as string,
-            currency: +(itemHtml.getAttribute('data-expected-currency') as string),
-            expectedPrice: +(itemHtml.getAttribute('data-expected-price') as string),
-            sellerName: itemHtml.getAttribute('data-seller-name') as string,
-            sellerId: +(itemHtml.getAttribute('data-expected-seller-id') as string),
-            userAssetId: +(itemHtml.getAttribute('data-userasset-id') as string),
-        };
+        if (isNumeric(priceText)) {
+            return +priceText;
+        }
+
+        return undefined;
     } catch (e) {
         log.error('Error getting item details in HTML');
         throw e;
@@ -56,6 +51,10 @@ export function readCookies(): puppeteer.Protocol.Network.Cookie[] {
 
 export async function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isNumeric(num: string): boolean {
+    return !Number.isNaN(num);
 }
 
 export async function getBrowser(isHeadlessWOnly: boolean): Promise<Browser> {
