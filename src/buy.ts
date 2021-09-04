@@ -23,7 +23,7 @@ export async function buy(productId: string, lowestPrice: number, cookies: puppe
             purchases++;
             totalEstProfit += potentialProfit;
             moneySpent += lowestPrice;
-            transactions.debug(`\nTotal Purchases: ${purchases}\nTotal spent: ${moneySpent}\nTotal estimated profit: ${totalEstProfit}`);
+            transactions.debug(`Purchase of ${productId} made for ${lowestPrice} rbx\nTotal Purchases: ${purchases}\nTotal spent: ${moneySpent}\nTotal estimated profit: ${totalEstProfit}`);
         } else {
             log.error('Failed to find confirm button');
         }

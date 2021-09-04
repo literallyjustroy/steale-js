@@ -7,12 +7,10 @@ log4js.configure({
         transactions: { type: 'file', filename: 'logs/transactions.log' }
     },
     categories: {
-        logOnly: { appenders: ['logFile'], level: 'debug' },
         default: { appenders: ['logFile', 'console'], level: 'debug' },
         transactions: { appenders: ['logFile', 'console', 'transactions'], level: 'debug' }
     }
 });
 
 export const log = log4js.getLogger('default');
-export const logOnly = log4js.getLogger('logOnly');
 export const transactions = log4js.getLogger('transactions');

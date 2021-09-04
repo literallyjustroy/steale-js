@@ -1,7 +1,6 @@
-import { performance } from 'perf_hooks';
 import { getItemPrice, readCookies, sleep } from './util/util';
 import { buy, moneySpent } from './buy';
-import { log, logOnly, transactions } from './util/log';
+import { log, transactions } from './util/log';
 import 'source-map-support/register'; // Error handling showing typescript lines
 
 const productId = '20573078'; // shaggy
@@ -16,7 +15,7 @@ const cookies = readCookies();
 (async () => {
     log.info(`Monitoring item https://www.roblox.com/catalog/${productId}`);
 
-    while (errorCount <= 5 && moneySpent < 10000) {
+    while (errorCount <= 5 && moneySpent < 20000) {
         try {
             await monitor();
         } catch (e) {
@@ -30,18 +29,16 @@ const cookies = readCookies();
 })();
 
 async function monitor() {
-    const start = performance.now();
-
     const lowestPrice = await getItemPrice(`https://www.roblox.com/catalog/${productId}`);
     if (lowestPrice !== undefined && lowestPrice != 0) {
         const potentialProfit = Math.floor((avgPrice * (1 - priceCutPercent - profitMarginPercent)) - lowestPrice); // 30% cut along with extra margins
         if (potentialProfit > 0) {
-            transactions.debug(`Buying item for ${lowestPrice}. Profit: `, potentialProfit);
+            log.debug(`Buying item for ${lowestPrice}. Profit: `, potentialProfit);
 
             try {
                 await buy(productId, lowestPrice, cookies, potentialProfit);
             } catch (e) {
-                transactions.error('Error buying item; did we miss it?', e);
+                transactions.error('Uncaught error buying item; did we miss it?', e);
             }
         }
 
@@ -49,9 +46,6 @@ async function monitor() {
             errorCount--; // Each success lowers error count
         }
     } else {
-        log.error('Expected price of 0?');
+        log.error('Failed to get price or expected price of 0?');
     }
-
-    const end = performance.now();
-    logOnly.info(`Took ${end - start} miliseconds`);
 }
