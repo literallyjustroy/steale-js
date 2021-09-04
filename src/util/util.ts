@@ -33,7 +33,7 @@ export async function getItemPrice(url: string): Promise<number | undefined> {
         return undefined;
     } catch (e) {
         log.error('Error getting item details in HTML');
-        throw e;
+        return undefined;
     }
 }
 
