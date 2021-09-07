@@ -3,8 +3,9 @@ import { parse } from 'node-html-parser';
 import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs';
 import { log } from './log';
+import settings from '../settings.json';
 
-/*export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
+export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
     let cookieString = '';
 
     cookies.forEach(cookie => {
@@ -12,7 +13,7 @@ import { log } from './log';
     });
 
     return cookieString;
-}*/
+}
 
 export async function getItemPrice(url: string): Promise<number | undefined> {
     try {
@@ -30,11 +31,23 @@ export async function getItemPrice(url: string): Promise<number | undefined> {
             return +priceText;
         }
 
+        log.error('Non numeric price text: ' + priceText);
         return undefined;
     } catch (e) {
         log.error('Error getting item details in HTML');
         return undefined;
     }
+}
+
+export async function getLoggedInUser(cookies: puppeteer.Protocol.Network.Cookie[]): Promise<string | undefined> {
+    const response = await fetch(settings.baseUrl, {
+        headers: {
+            'Content-Type': 'application/json',
+            'cookies': getCookieString(cookies)
+        }
+    });
+    const html = parse(await response.text());
+    return html.querySelector('.user-name-container')?.text;
 }
 
 export function readCookies(): puppeteer.Protocol.Network.Cookie[] {
