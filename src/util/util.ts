@@ -5,7 +5,7 @@ import fs from 'fs';
 import { log } from './log';
 import settings from '../settings.json';
 
-export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
+/*export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
     let cookieString = '';
 
     cookies.forEach(cookie => {
@@ -13,7 +13,7 @@ export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): s
     });
 
     return cookieString;
-}
+}*/
 
 export async function getItemPrice(url: string): Promise<number | undefined> {
     try {
@@ -39,15 +39,15 @@ export async function getItemPrice(url: string): Promise<number | undefined> {
     }
 }
 
-export async function getLoggedInUser(cookies: puppeteer.Protocol.Network.Cookie[]): Promise<string | undefined> {
-    const response = await fetch(settings.baseUrl, {
-        headers: {
-            'Content-Type': 'application/json',
-            'cookies': getCookieString(cookies)
-        }
-    });
-    const html = parse(await response.text());
-    return html.querySelector('.user-name-container')?.text;
+export async function getLoggedInUser(cookies: puppeteer.Protocol.Network.Cookie[]): Promise<string | null> {
+    const browser: Browser = await getBrowser(true);
+    const page = await browser.newPage();
+    await page.setCookie(...cookies);
+    await page.goto(settings.baseUrl);
+    const username = await page.$eval('.user-name-container', el => el.textContent);
+    await browser.close();
+
+    return username;
 }
 
 export function readCookies(): puppeteer.Protocol.Network.Cookie[] {
@@ -62,9 +62,9 @@ export function readCookies(): puppeteer.Protocol.Network.Cookie[] {
     return [rbxSecCookie];
 }
 
-export async function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+// export async function sleep(ms: number): Promise<void> {
+//     return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 function isNumeric(num: string): boolean {
     return !Number.isNaN(num);

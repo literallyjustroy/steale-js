@@ -2,6 +2,7 @@ import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs';
 import { log } from './util/log';
 import { getBrowser } from './util/util';
+import settings from './settings.json';
 
 (async () => {
     let username;
@@ -22,14 +23,14 @@ import { getBrowser } from './util/util';
 
     const browser: Browser = await getBrowser(false);
     const page = await browser.newPage();
-    await page.goto('https://www.roblox.com/login');
+    await page.goto(`${settings.baseUrl}/login`);
     // await page.screenshot({ path: 'example.png' });
     await page.type('#login-username', username);
     await page.type('#login-password', password);
     await page.click('#login-button');
     try {
         await page.waitForNavigation();
-        await page.goto('https://www.roblox.com/catalog/20573078');
+        await page.goto(`${settings.baseUrl}/catalog/20573078`); // Visit arbitrary item and gather cookies
         await saveCookies(page);
         log.debug('Cookies saved');
     } catch (e) {
