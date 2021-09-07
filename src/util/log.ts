@@ -1,4 +1,5 @@
 import log4js from 'log4js';
+import 'source-map-support/register'; // Error handling showing typescript lines
 
 log4js.configure({
     appenders: {

@@ -3,6 +3,7 @@ import fs from 'fs';
 import { log } from './util/log';
 import { getBrowser } from './util/util';
 import settings from './settings.json';
+import 'source-map-support/register'; // Error handling showing typescript lines
 
 (async () => {
     let username;
@@ -20,6 +21,8 @@ import settings from './settings.json';
             process.exit();
         }
     }
+
+    log.info(`Attempting sign in as ${username}`);
 
     const browser: Browser = await getBrowser(false);
     const page = await browser.newPage();

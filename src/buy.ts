@@ -2,6 +2,7 @@ import puppeteer, { ElementHandle } from 'puppeteer';
 import { log, transactions } from './util/log';
 import { getBrowser } from './util/util';
 import settings from './settings.json';
+import 'source-map-support/register'; // Error handling showing typescript lines
 
 let purchases = 0;
 export let moneySpent = 0;

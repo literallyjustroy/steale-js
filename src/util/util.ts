@@ -4,6 +4,7 @@ import puppeteer, { Browser } from 'puppeteer';
 import fs from 'fs';
 import { log } from './log';
 import settings from '../settings.json';
+import 'source-map-support/register'; // Error handling showing typescript lines
 
 /*export function getCookieString(cookies: puppeteer.Protocol.Network.Cookie[]): string {
     let cookieString = '';
