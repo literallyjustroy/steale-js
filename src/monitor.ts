@@ -4,8 +4,8 @@ import { log, transactions } from './util/log';
 import 'source-map-support/register'; // Error handling showing typescript lines
 import settings from './settings.json';
 
-const productId = '20573078'; // shaggy
-const avgPrice = 1119; // !! NEVER USE AVERAGE PRICE, ex: avg price 3137 for perf legit business hat, value: 6000
+const productId = '1125510'; // void star
+const avgPrice = 930000; // !! NEVER USE AVERAGE PRICE, ex: avg price 3137 for perf legit business hat, value: 6000
 const profitMarginPercent = 0; // The average price is an estimate in any case, so this can be 0
 const maxMoneySpentCutoff = 100000; // Shut down monitor loop after 100,000 rbx spent.
 
